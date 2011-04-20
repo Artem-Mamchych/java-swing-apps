@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="PMD-java" name="SCWebBuild">
+
+	<!--including build properties file-->
+	<property file="build.properties"/>
+	<!-- PMD, CPD thresholds -->
+	<property file="threshold.properties" />
+
+	<path id="testtools.lib.home">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset> 
+	</path>
+	<path id="threshold.classpath">
+		<pathelement location="${jars.dir}/test/pmd/checkthresholdutil-4-1.3.jar" />
+	</path>
+
+	<target name="PMD-java" description="Check pmd quality and generate report.">
+		<delete dir="${report.pmd.dir}" />
+		<mkdir dir="${report.pmd.dir}" />
+		<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask">
+			<classpath refid="testtools.lib.home" />
+		</taskdef>
+		<pmd shortFilenames="true" targetjdk="1.4" rulesetfiles="basic,unusedcode,braces,clone,codesize,coupling,design,imports,naming,strings">
+			<formatter type="xml" toFile="${report.pmd.dir}/pmd.xml"/>
+			<fileset dir="${src.dir}">  <!-- location of java files directory -->
+				<include name="**/*.java"/>
+			</fileset>
+		</pmd>
+		<xslt in="${report.pmd.dir}/pmd.xml" style="${jars.dir}/test/pmd/pmd-report-per-class.xslt" out="${report.pmd.dir}/pmd-report-per-class.html" >
+			<outputproperty name="indent" value="yes" />
+		</xslt>
+	</target>
+
+</project>
